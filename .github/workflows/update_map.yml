@@ -1,0 +1,37 @@
+name: Mise à jour quotidienne Carte VIE Achats
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v4
+
+      - name: Installation de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installation des dépendances et de Chromium
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium
+
+      - name: Exécution du scraper et génération de la carte
+        run: python scraper_vie.py
+
+      - name: Sauvegarde de la nouvelle carte sur GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add index.html geo_cache.json
+          git commit -m "Mise à jour automatique des offres VIE" || exit 0
+          git push
