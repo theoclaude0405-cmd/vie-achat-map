@@ -35,6 +35,6 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add index.html geo_cache.json seen_offers.json
+          git add -A
           git commit -m "Mise à jour automatique des offres VIE" || exit 0
           git push
