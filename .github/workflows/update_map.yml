@@ -22,16 +22,19 @@ jobs:
 
       - name: Installation des dépendances et de Chromium
         run: |
-          pip install -r requirements.txt
+          pip install playwright==1.48.0 folium==0.18.0 geopy==2.4.1 pandas==2.2.3
           playwright install chromium
 
       - name: Exécution du scraper et génération de la carte
+        env:
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python scraper_vie.py
 
-      - name: Sauvegarde de la nouvelle carte sur GitHub
+      - name: Sauvegarde de la nouvelle carte et de l'historique
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add index.html geo_cache.json
+          git add index.html geo_cache.json seen_offers.json
           git commit -m "Mise à jour automatique des offres VIE" || exit 0
           git push
